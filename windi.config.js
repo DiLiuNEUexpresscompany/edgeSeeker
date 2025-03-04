@@ -139,6 +139,15 @@ export default defineConfig({
       backgroundSize: {
         'shimmer': '200% 100%',
       },
+      scrollbarHide: {
+        '.scrollbar-hide': {
+          '-ms-overflow-style': 'none', // IE and Edge
+          'scrollbar-width': 'none', // Firefox
+        },
+        '.scrollbar-hide::-webkit-scrollbar': {
+          'display': 'none', // Chrome, Safari, Opera
+        },
+      },
     },
   },
   plugins: [

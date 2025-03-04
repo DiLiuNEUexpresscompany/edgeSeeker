@@ -1,125 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+// 导入 Swiper 核心组件和模块
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules';
 
-const NewsCarousel = ({ 
+// 导入 Swiper 样式
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import 'swiper/css/effect-fade';
+
+const NewsHeroCarousel = ({ 
   news = [], 
-  autoplaySpeed = 6000, 
-  showProgress = true,
-  showControls = true,
-  renderItem = null
+  autoplaySpeed = 6000
 }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [transitioning, setTransitioning] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const swiperRef = useRef(null);
   
-  // 使用useRef存储状态以避免闭包问题
-  const isPausedRef = useRef(isPaused);
-  const activeIndexRef = useRef(activeIndex);
-  const progressRef = useRef(null);
-  const autoplayRef = useRef(null);
-  const timeoutRef = useRef(null);
-  
-  // 更新ref值以反映最新状态
-  useEffect(() => {
-    isPausedRef.current = isPaused;
-    activeIndexRef.current = activeIndex;
-  }, [isPaused, activeIndex]);
-  
-  // 清理所有定时器的函数
-  const clearAllTimers = () => {
-    if (autoplayRef.current) {
-      clearInterval(autoplayRef.current);
-      autoplayRef.current = null;
-    }
-    if (progressRef.current) {
-      clearInterval(progressRef.current);
-      progressRef.current = null;
-    }
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  };
-  
-  // 启动自动播放和进度条
-  const startAutoplay = () => {
-    if (news.length <= 1 || isPausedRef.current) return;
-    
-    // 确保先清除现有定时器
-    clearAllTimers();
-    
-    const intervalTime = autoplaySpeed;
-    const updateInterval = intervalTime / 100;
-    
-    // 保存当前进度值，用于计算剩余时间
-    const currentProgress = progress;
-    const remainingTime = ((100 - currentProgress) / 100) * intervalTime;
-    
-    // 进度条动画 - 从当前进度继续
-    progressRef.current = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) return 0;
-        return prev + 100 / (intervalTime / updateInterval);
-      });
-    }, updateInterval);
-    
-    // 自动播放 - 根据剩余时间设置
-    autoplayRef.current = setTimeout(() => {
-      if (!isPausedRef.current) {
-        const nextIndex = (activeIndexRef.current + 1) % news.length;
-        handleSlideChange(nextIndex);
-      }
-    }, remainingTime || intervalTime); // 如果没有剩余时间，使用完整时间
-  };
-
-  // 自动播放初始化和清理
-  useEffect(() => {
-    if (news.length <= 1) return;
-    
-    startAutoplay();
-    
-    return () => clearAllTimers();
-  }, [news.length]); // 仅在新闻数据变化时重新设置
-  
-  // 暂停状态变化时的处理
-  useEffect(() => {
-    if (news.length <= 1) return;
-    
-    if (isPaused) {
-      // 暂停时保存当前进度
-      clearAllTimers();
-      // 不重置进度，保持当前进度
-    } else {
-      // 恢复时从当前进度继续
-      startAutoplay();
-    }
-  }, [isPaused]);
-  
-  // 处理幻灯片切换
-  const handleSlideChange = (newIndex) => {
-    if (transitioning || newIndex === activeIndex || newIndex >= news.length) return;
-    
-    setTransitioning(true);
-    clearAllTimers();
-    
-    // 重置进度条，但仅在切换幻灯片时
-    setProgress(0);
-    
-    // 延迟切换幻灯片
-    timeoutRef.current = setTimeout(() => {
-      setActiveIndex(newIndex);
-      setTransitioning(false);
-      
-      if (!isPausedRef.current) {
-        startAutoplay();
-      }
-    }, 300);
-  };
-
-  // 下一张和上一张
-  const nextSlide = () => handleSlideChange((activeIndex + 1) % news.length);
-  const prevSlide = () => handleSlideChange((activeIndex - 1 + news.length) % news.length);
-
   // 获取分类徽章颜色
   const getCategoryColor = (category) => {
     const colors = {
@@ -131,58 +27,11 @@ const NewsCarousel = ({
     };
     return colors[category] || colors.default;
   };
-
-  // 新闻项默认渲染函数
-  const defaultRenderItem = (item) => (
-    <div className="flex flex-col md:flex-row h-[360px]">
-      {/* 图片部分 - 固定高度并裁切 */}
-      {item.image && (
-        <div className="w-full md:w-1/2 h-[240px] md:h-full relative overflow-hidden">
-          <img 
-            src={item.image} 
-            alt={item.title} 
-            className="w-full h-full object-cover rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent md:bg-gradient-to-r md:from-black/40 md:to-transparent"></div>
-        </div>
-      )}
-      
-      {/* 内容部分 */}
-      <div className={`p-6 md:p-8 flex flex-col ${item.image ? 'w-full md:w-1/2' : 'w-full'} overflow-y-auto max-h-[360px]`}>
-        <div className="flex items-center gap-3 mb-3">
-          <span className={`text-xs font-semibold py-1 px-3 rounded-full text-white ${getCategoryColor(item.category_name)}`}>
-            {item.category_name}
-          </span>
-          <span className="text-gray-400 text-sm">
-            {item.published_at}
-          </span>
-        </div>
-        
-        <h2 className="text-2xl font-bold mb-4 leading-tight text-accent-midnight">
-          {item.title}
-        </h2>
-        
-        <p className="text-gray-600 mb-6 flex-grow line-clamp-3">
-          {item.summary}
-        </p>
-        
-        <div className="mt-auto flex items-center justify-between">
-          <span className="text-sm text-gray-500">作者: {item.author}</span>
-          <a href={`/news/${item.id}`} className="inline-flex items-center gap-1.5 text-primary-DEFAULT font-medium text-sm group">
-            <span>阅读更多</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-
+  
   // 空状态
   if (!Array.isArray(news) || news.length === 0) {
     return (
-      <div className="bg-accent-midnight/5 rounded-xl p-8 text-center border border-accent-midnight/10">
+      <div className="bg-accent-midnight/5 rounded-xl p-8 text-center border border-accent-midnight/10 w-full">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-accent-midnight/30 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
         </svg>
@@ -191,98 +40,173 @@ const NewsCarousel = ({
     );
   }
 
-  // 添加防抖处理鼠标事件
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setIsPaused(true), 100);
-  };
-  
-  const handleMouseLeave = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setIsPaused(false), 100);
-  };
-
   return (
-    <div 
-      className="relative overflow-hidden rounded-2xl shadow-md bg-white h-[360px]"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* 进度条 */}
-      {showProgress && (
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 z-10">
-          <div 
-            className={`h-full bg-primary-light ${isPaused ? 'transition-none' : 'transition-all duration-300 ease-linear'}`}
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      )}
-
-      {/* 新闻内容 */}
+    <div className="relative rounded-xl shadow-lg overflow-hidden w-full max-w-screen-xl mx-auto">
+      {/* 自定义按钮样式 */}
+      <style jsx>{`
+        .swiper-button-prev, .swiper-button-next {
+          width: 48px;
+          height: 48px;
+          background-color: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(4px);
+          border-radius: 50%;
+          box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+          color: #1e293b;
+          transition: all 0.3s ease;
+        }
+        
+        .swiper-button-prev:hover, .swiper-button-next:hover {
+          transform: scale(1.1);
+          color: #db2777;
+          background-color: rgba(255, 255, 255, 1);
+        }
+        
+        .swiper-button-prev:after, .swiper-button-next:after {
+          font-size: 22px;
+          font-weight: bold;
+        }
+        
+        .swiper-pagination {
+          bottom: 16px !important;
+        }
+        
+        .swiper-pagination-bullet {
+          width: 8px;
+          height: 8px;
+          background: rgba(255, 255, 255, 0.8);
+          opacity: 1;
+          transition: all 0.3s ease;
+        }
+        
+        .swiper-pagination-bullet-active {
+          width: 32px;
+          border-radius: 4px;
+          background: #db2777;
+        }
+      `}</style>
+      
       <div 
-        className={`transition-opacity duration-300 ease-in-out h-full ${transitioning ? 'opacity-0' : 'opacity-100'}`}
+        onMouseEnter={() => {
+          setIsHovered(true);
+          if (swiperRef.current && swiperRef.current.autoplay) {
+            swiperRef.current.autoplay.stop();
+          }
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          if (swiperRef.current && swiperRef.current.autoplay) {
+            swiperRef.current.autoplay.start();
+          }
+        }}
+        className="w-full"
       >
-        {news[activeIndex] && (renderItem ? renderItem(news[activeIndex], activeIndex) : defaultRenderItem(news[activeIndex]))}
+        <Swiper
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
+          modules={[Autoplay, Pagination, Navigation, EffectFade]}
+          spaceBetween={0}
+          slidesPerView={1}
+          loop={true}
+          effect="fade"
+          fadeEffect={{ crossFade: true }}
+          autoplay={{
+            delay: autoplaySpeed,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+          }}
+          pagination={{
+            clickable: true,
+            type: 'bullets',
+            bulletActiveClass: 'swiper-pagination-bullet-active',
+            bulletClass: 'swiper-pagination-bullet'
+          }}
+          navigation={true}
+          className="w-full hero-swiper"
+        >
+          {news.map((item, index) => (
+            <SwiperSlide key={index} className="w-full">
+              <div className="relative w-full md:aspect-[21/9] min-h-[480px]">
+                {/* 图片背景 */}
+                {item.image && (
+                  <div className="absolute inset-0 w-full h-full">
+                    <img 
+                      src={item.image} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+                  </div>
+                )}
+                
+                {/* 内容区 */}
+                <div className="relative z-10 flex flex-col justify-center h-full w-full max-w-screen-lg mx-auto px-6 md:px-12 py-12 md:py-20">
+                  <div className="max-w-2xl">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className={`text-sm font-semibold py-1 px-4 rounded-full text-white ${getCategoryColor(item.category_name)}`}>
+                        {item.category_name}
+                      </span>
+                      <span className="text-gray-300 text-sm">
+                        {item.published_at}
+                      </span>
+                    </div>
+                    
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white leading-tight">
+                      {item.title}
+                    </h1>
+                    
+                    <p className="text-gray-200 text-lg mb-8 max-w-xl leading-relaxed">
+                      {item.summary}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-300 font-medium">作者: {item.author}</span>
+                      <a 
+                        href={`/news/${item.id}`} 
+                        className="inline-flex items-center gap-2 bg-primary-DEFAULT hover:bg-primary-dark text-white font-medium px-5 py-3 rounded-lg transition-all group"
+                      >
+                        <span>阅读更多</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
 
-      {/* 导航箭头 */}
-      {showControls && news.length > 1 && (
-        <>
-          <button 
-            onClick={prevSlide}
-            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-md text-accent-midnight hover:text-primary-light z-10 transition-all hover:scale-110"
-            aria-label="上一张"
-            disabled={transitioning}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button 
-            onClick={nextSlide}
-            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-md text-accent-midnight hover:text-primary-light z-10 transition-all hover:scale-110"
-            aria-label="下一张"
-            disabled={transitioning}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </>
-      )}
-
-      {/* 点导航 */}
-      {news.length > 1 && (
-        <div className="flex justify-center mt-6 mb-4 space-x-2 absolute bottom-0 left-0 right-0">
-           {news.map((_, index) => (
-            <button
-                key={index}
-                onClick={() => handleSlideChange(index)}
-                style={{
-                transition: "all 300ms ease-out",
-                width: activeIndex === index ? '32px' : '8px',
-                height: '8px',
-                backgroundColor: activeIndex === index ? '#db2777' : '#d1d5db',
-                borderRadius: '9999px'
-                }}
-                onMouseEnter={(e) => {
-                if (activeIndex !== index) {
-                    e.currentTarget.style.backgroundColor = '#9ca3af'; // Hover color (gray-400)
-                }
-                }}
-                onMouseLeave={(e) => {
-                if (activeIndex !== index) {
-                    e.currentTarget.style.backgroundColor = '#d1d5db'; // Default color (gray-300)
-                }
-                }}
-                aria-label={`跳转到第${index + 1}张`}
-                disabled={transitioning}
-            />
-            ))}
+      {/* 添加自定义进度条 */}
+      {isHovered ? null : (
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200/30 z-10 swiper-progress-bar">
+          <style jsx>{`
+            .swiper-progress-bar::after {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              height: 100%;
+              width: 100%;
+              background-color: #db2777;
+              transform-origin: left center;
+              animation: progress ${autoplaySpeed}ms linear infinite;
+            }
+            @keyframes progress {
+              0% {
+                transform: scaleX(0);
+              }
+              100% {
+                transform: scaleX(1);
+              }
+            }
+          `}</style>
         </div>
       )}
     </div>
   );
 };
 
-export default NewsCarousel;
+export default NewsHeroCarousel;
