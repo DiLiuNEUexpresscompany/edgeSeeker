@@ -26,7 +26,7 @@ const Navbar = () => {
           {/* Logo */}
           <div>
             <a href="/" className="text-2xl font-bold text-black flex items-center">
-              a<span className="text-red-500">●</span>live
+              edge<span className="text-red-500">●</span>SEEKER
             </a>
           </div>
 

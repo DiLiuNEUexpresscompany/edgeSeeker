@@ -3,6 +3,7 @@ import { defineConfig } from 'windicss/helpers';
 export default defineConfig({
   darkMode: 'class',
   theme: {
+    
     fontFamily: {
       sans: ['DM Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       display: ['Cabinet Grotesk', 'DM Sans', 'ui-sans-serif', 'system-ui'],
