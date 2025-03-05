@@ -1,96 +1,136 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+// 如果需要图标，可以安装 heroicons：npm install @heroicons/react
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
 
 const Navbar = () => {
   const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // 分类数据
   const categories = [
     { id: 'all', name: '全部', path: '/' },
     { id: 'western', name: '美西方', count: 2, path: '/category/western' },
     { id: 'russia-ukraine', name: '俄乌', path: '/category/russia-ukraine' },
-    { id: 'middle-east', name: '中东', path: '/category/middle-east' },
-    { id: 'asia-pacific', name: '亚太', path: '/category/asia-pacific' },
-    { id: 'others', name: '其他', path: '/category/others' }
+    { id: 'middle-east', name: '中东', path: '/category/middle-east' }
   ];
-
-  const today = new Date();
-  const formattedDate = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
-
-  // 检查当前路径是否匹配分类路径
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
 
   return (
     <header className="w-full">
-      {/* 顶部导航栏 */}
-      <div className="bg-zinc-800 text-white">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="h-7 w-7 bg-fuchsia-600 rounded-md flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-              </svg>
-            </div>
-            <Link to="/" className="text-xl font-bold">全球热点新闻</Link>
+      {/* 顶部红色条 */}
+      <div className="w-full h-1 bg-red-500"></div>
+
+      {/* 主导航部分 */}
+      <div className="bg-[#e9e4dd] py-4">
+        <div className="w-full px-4 md:px-8 lg:px-16 flex items-center justify-between">
+          {/* Logo */}
+          <div>
+            <a href="/" className="text-2xl font-bold text-black flex items-center">
+              a<span className="text-red-500">●</span>live
+            </a>
           </div>
-          
+
+          {/* 右侧部分：包含汉堡菜单按钮(小屏幕) 和 社交媒体图标(大屏幕) */}
           <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-300">
-              <span className="hidden sm:inline">{formattedDate}</span>
-            </div>
-            
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="搜索新闻..."
-                className="bg-zinc-700 text-white text-sm rounded-full px-4 py-1.5 pl-8 focus:outline-none focus:ring-1 focus:ring-fuchsia-500 w-48"
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+            {/* 小屏幕：汉堡菜单按钮（lg:hidden 表示在 lg 及以上屏幕隐藏） */}
+            <button
+              className="lg:hidden focus:outline-none"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <XMarkIcon className="h-6 w-6 text-black" />
+              ) : (
+                <Bars3Icon className="h-6 w-6 text-black" />
+              )}
+            </button>
+
+            {/* 大屏幕：社交媒体图标（hidden lg:flex 表示小屏幕隐藏，lg 及以上显示） */}
+            <div className="hidden lg:flex space-x-2">
+              <a href="https://youtube.com" className="bg-red-500 rounded-full p-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                </svg>
+              </a>
+              <a href="https://instagram.com" className="bg-red-500 rounded-full p-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+              </a>
+              <a href="https://facebook.com" className="bg-red-500 rounded-full p-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* 最新新闻标题栏 */}
-      <div className="w-full bg-zinc-100 border-b border-zinc-200">
-        <div className="container mx-auto px-4 py-2 flex items-center">
-          <div className="flex items-center">
-            <div className="w-1 h-6 bg-fuchsia-600 mr-3"></div>
-            <h2 className="text-lg font-bold text-zinc-800">最新新闻</h2>
+
+        {/* 移动端下拉菜单（当 isMenuOpen = true 时显示） */}
+        {isMenuOpen && (
+          <div className="bg-[#e9e4dd] px-4 pt-4 pb-2 flex flex-col space-y-2 lg:hidden">
+            {categories.map((cat) => {
+              const isActive = location.pathname === cat.path;
+              return (
+                <Link
+                  key={cat.id}
+                  to={cat.path}
+                  className={[
+                    'block py-2 px-2 text-sm font-medium',
+                    isActive ? 'bg-blue-600 text-white' : 'bg-white text-black'
+                  ].join(' ')}
+                  onClick={() => setIsMenuOpen(false)} // 点击后收起菜单
+                >
+                  {cat.name}
+                  {cat.count && (
+                    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs">
+                      {cat.count}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+
+            {/* 如果需要在移动端菜单中也放社交媒体图标，可以在这里添加 */}
           </div>
-          <span className="text-sm text-zinc-500 ml-3">每日更新</span>
-        </div>
-      </div>
-      
-      {/* 分类导航 */}
-      <div className="w-full bg-zinc-200">
-        <div className="container mx-auto px-4">
-          <div className="flex overflow-x-auto py-2 -mx-1 scrollbar-hide">
-            {categories.map(category => (
+        )}
+
+        {/* 大屏幕分类按钮条：hidden lg:flex，小屏幕隐藏 */}
+        <div className="hidden lg:flex bg-[#e9e4dd] px-8 lg:px-16 py-2">
+          {categories.map((cat) => {
+            const isActive = location.pathname === cat.path;
+            return (
               <Link
-                key={category.id}
-                to={category.path}
-                className={`whitespace-nowrap px-4 py-1.5 mx-1 text-sm rounded-full transition-colors ${
-                  isActive(category.path)
-                    ? 'bg-fuchsia-600 text-white font-medium'
-                    : 'bg-white text-zinc-700 hover:bg-zinc-100'
-                }`}
+                key={cat.id}
+                to={cat.path}
+                className={[
+                  'mx-1 h-10 px-4 flex items-center justify-center text-sm font-medium border border-transparent',
+                  isActive ? 'bg-blue-600 text-white font-bold' : 'bg-white text-black'
+                ].join(' ')}
               >
-                {category.name}
-                {category.count > 0 && (
-                  <span className={`ml-1.5 px-1.5 py-0.5 text-xs rounded-full ${
-                    isActive(category.path)
-                      ? 'bg-white text-fuchsia-600 font-medium'
-                      : 'bg-zinc-200 text-zinc-700'
-                  }`}>
-                    {category.count}
+                {cat.name}
+                {cat.count && (
+                  <span className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs">
+                    {cat.count}
                   </span>
                 )}
               </Link>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </header>

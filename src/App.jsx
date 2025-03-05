@@ -11,29 +11,32 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const [appReady, setAppReady] = useState(false);
-  
-  // 添加一个应用初始化延迟，确保应用在渲染前已完全准备好
+
+  // 模拟初始化延迟
   useEffect(() => {
-    // 模拟应用初始化过程
     const timer = setTimeout(() => {
       setAppReady(true);
     }, 200);
-    
+
     return () => clearTimeout(timer);
   }, []);
-  
+
+  // 加载中的过渡界面，也使用相同背景
   if (!appReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-[#e9e4dd]">
         <LoadingSpinner />
       </div>
     );
   }
-  
+
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* 整个应用的外层容器，背景改为 #e9e4dd */}
+      <div className="flex flex-col min-h-screen bg-[#e9e4dd]">
         <Navbar />
+        
+        {/* 主体部分容器，可根据需要决定是否使用 container */}
         <main className="flex-grow container mx-auto px-4 py-6">
           <ErrorBoundary>
             <Routes>
@@ -44,6 +47,7 @@ function App() {
             </Routes>
           </ErrorBoundary>
         </main>
+
         <Footer />
       </div>
     </Router>
