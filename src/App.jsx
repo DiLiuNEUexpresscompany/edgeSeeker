@@ -8,6 +8,7 @@ import AdminPage from './pages/AdminPage';
 import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
+import MDXEditorUsage from './pages/MDXEditorUsage'; // 确保导入正确
 
 function App() {
   const [appReady, setAppReady] = useState(false);
@@ -44,6 +45,7 @@ function App() {
               <Route path="/category/:category" element={<CategoryPage />} />
               <Route path="/news/:id" element={<NewsDetailPage />} />
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/editor" element={<MDXEditorUsage  />} /> {/* 修正路由组件 */}
             </Routes>
           </ErrorBoundary>
         </main>

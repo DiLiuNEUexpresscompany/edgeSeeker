@@ -26,4 +26,6 @@ dist-ssr
 
 # OS directories
 cnn_articles
+wapo_articles
 __pycache__
+header.txt
