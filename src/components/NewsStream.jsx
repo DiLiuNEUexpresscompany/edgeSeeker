@@ -1,39 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, RefreshCw, TrendingUp, Bitcoin, ChevronLeft, ChevronRight } from 'lucide-react';
-
-// 模拟新闻数据生成函数
-const generateMockNewsStream = () => {
-  return [
-    {
-      id: 1,
-      title: "实时突发：国际关系",
-      source: "BBC",
-      timestamp: "01:04:53",
-      duration: 11,
-      content: "最新消息正在持续更新中...",
-      category: "国际",
-      image: "/api/placeholder/400/200"
-    }
-  ];
-};
+import { 
+  Globe, 
+  RefreshCw, 
+  TrendingUp, 
+  Bitcoin, 
+  ChevronLeft, 
+  ChevronRight,
+  ArrowUp,
+  Clock
+} from 'lucide-react';
 
 // 模拟美股数据
 const mockStockData = [
-  { symbol: "AAPL", name: "苹果", price: 182.45, change: 1.23 },
-  { symbol: "GOOGL", name: "谷歌", price: 125.67, change: -0.45 },
-  { symbol: "MSFT", name: "微软", price: 335.22, change: 0.89 }
+  { symbol: "AAPL", name: "苹果", price: 182.45, change: 1.23, url: "https://finance.yahoo.com/quote/AAPL" },
+  { symbol: "GOOGL", name: "谷歌", price: 125.67, change: -0.45, url: "https://finance.yahoo.com/quote/GOOGL" },
+  { symbol: "MSFT", name: "微软", price: 335.22, change: 0.89, url: "https://finance.yahoo.com/quote/MSFT" }
 ];
 
 // 模拟加密货币数据
 const mockCryptoData = [
-  { symbol: "BTC", name: "比特币", price: 51234.56, change: 1.23 },
-  { symbol: "ETH", name: "以太坊", price: 2876.44, change: 0.45 },
-  { symbol: "BNB", name: "币安币", price: 312.22, change: -0.89 }
+  { symbol: "BTC", name: "比特币", price: 51234.56, change: 1.23, url: "https://coinmarketcap.com/currencies/bitcoin/" },
+  { symbol: "ETH", name: "以太坊", price: 2876.44, change: 0.45, url: "https://coinmarketcap.com/currencies/ethereum/" },
+  { symbol: "BNB", name: "币安币", price: 312.22, change: -0.89, url: "https://coinmarketcap.com/currencies/bnb/" }
 ];
 
 // 新闻项目组件
 const NewsItem = React.memo(({ news, index, isLoading }) => {
+  // 格式化日期
+  const formatTimestamp = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('zh-CN', { hour12: false });
+  };
+
+  // 计算实际阅读时间（更准确的估计）
+  const calculateDuration = (title) => {
+    return Math.max(5, Math.floor(title.length / 10));
+  };
+
   return (
     <motion.div
       layout
@@ -100,14 +104,17 @@ const NewsItem = React.memo(({ news, index, isLoading }) => {
       >
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-gray-700">{news.source}</span>
-            <span className="text-xs text-gray-500">{news.timestamp}</span>
+            <span className="text-sm font-medium text-gray-700">{news.website}</span>
+            <span className="text-xs text-gray-500">{formatTimestamp(news.date)}</span>
           </div>
-          <span className="text-xs text-gray-500">{news.duration}分钟</span>
+          <div className="flex items-center text-xs text-gray-500">
+            <Clock size={12} className="mr-1" />
+            {calculateDuration(news.title)}分钟
+          </div>
         </div>
         {news.image && (
           <motion.div 
-            className="mb-3 rounded-lg overflow-hidden"
+            className="mb-3 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ 
               opacity: 1, 
@@ -118,6 +125,7 @@ const NewsItem = React.memo(({ news, index, isLoading }) => {
                 damping: 20 
               }
             }}
+            onClick={() => window.open(news.url, '_blank')}
           >
             <img 
               src={news.image} 
@@ -126,8 +134,13 @@ const NewsItem = React.memo(({ news, index, isLoading }) => {
             />
           </motion.div>
         )}
-        <h3 className="font-semibold text-base mb-1">{news.title}</h3>
-        <p className="text-sm text-gray-600">{news.content}</p>
+        <h3 
+          className="font-semibold text-base mb-1 cursor-pointer hover:text-blue-600 transition-colors"
+          onClick={() => window.open(news.url, '_blank')}
+        >
+          {news.title}
+        </h3>
+        <p className="text-sm text-gray-600">{news.category}</p>
       </motion.div>
     </motion.div>
   );
@@ -135,15 +148,87 @@ const NewsItem = React.memo(({ news, index, isLoading }) => {
 
 const MultiPageNewsStreamComponent = () => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [newsStream, setNewsStream] = useState(generateMockNewsStream());
+  const [newsStream, setNewsStream] = useState([]);
   const [stocks] = useState(mockStockData);
   const [cryptos] = useState(mockCryptoData);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const contentRef = useRef(null);
+
+  // 获取CNN新闻数据
+  const fetchCNNNews = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('http://127.0.0.1:5000/api/admin/news/cnn');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch news data');
+      }
+      
+      const data = await response.json();
+      // 确保每条新闻都有URL
+      const newsWithUrl = data.map(news => ({
+        ...news,
+        url: news.url || '#' // 如果没有URL，使用#作为占位符
+      }));
+      setNewsStream(newsWithUrl);
+    } catch (error) {
+      console.error('Error fetching CNN news:', error);
+      // 为了演示目的，添加一些模拟数据
+      const mockNews = [
+        {
+          title: "全球科技企业加速AI投资，竞争日益激烈",
+          website: "CNN",
+          date: new Date().toISOString(),
+          category: "科技",
+          image: "https://via.placeholder.com/600x400",
+          url: "https://www.cnn.com/tech"
+        },
+        {
+          title: "金融市场波动加剧，投资者谨慎观望",
+          website: "CNN",
+          date: new Date().toISOString(),
+          category: "金融",
+          image: "https://via.placeholder.com/600x400",
+          url: "https://www.cnn.com/money"
+        }
+      ];
+      setNewsStream(mockNews);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 监听滚动事件，显示/隐藏返回顶部按钮
+  useEffect(() => {
+    const container = contentRef.current;
+    if (!container) return;
+    
+    const handleScroll = () => {
+      setShowScrollTop(container.scrollTop > 200);
+    };
+    
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 初始加载和定时刷新新闻
+  useEffect(() => {
+    // 初始加载
+    fetchCNNNews();
+    
+    // 设置定时刷新（每10秒）
+    const interval = setInterval(() => {
+      fetchCNNNews();
+    }, 10000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // 页面配置
   const pages = [
     {
-      title: "实时新闻",
+      title: "CNN实时新闻",
       icon: Globe,
       content: newsStream
     },
@@ -159,35 +244,31 @@ const MultiPageNewsStreamComponent = () => {
     }
   ];
 
-  // 模拟实时新闻流
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsLoading(true);
-      
-      const newNews = {
-        id: Date.now(),
-        title: "实时突发：" + ["全球经济", "科技创新", "国际关系"][Math.floor(Math.random() * 3)],
-        source: ["路透社", "新华社", "BBC"][Math.floor(Math.random() * 3)],
-        timestamp: new Date().toLocaleTimeString('zh-CN', { hour12: false }),
-        duration: Math.floor(Math.random() * 30) + 5,
-        content: "最新消息正在持续更新中...",
-        category: ["政治", "经济", "科技"][Math.floor(Math.random() * 3)],
-        image: "/api/placeholder/400/200"
-      };
-      
-      setTimeout(() => {
-        setNewsStream(prev => [newNews, ...prev].slice(0, 5));
-        setIsLoading(false);
-      }, 500);
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   // 切换页面
   const handlePageChange = (direction) => {
     const newPage = (currentPage + direction + pages.length) % pages.length;
     setCurrentPage(newPage);
+    // 切换页面时，滚动到顶部
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+  };
+
+  // 手动刷新
+  const handleRefresh = () => {
+    if (currentPage === 0) {
+      fetchCNNNews();
+    }
+  };
+
+  // 滚动到顶部
+  const scrollToTop = () => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
   };
 
   // 渲染不同页面的内容
@@ -218,14 +299,20 @@ const MultiPageNewsStreamComponent = () => {
             />
           )}
           <AnimatePresence>
-            {currentPageData.content.map((news, index) => (
-              <NewsItem 
-                key={news.id}
-                news={news} 
-                index={index} 
-                isLoading={isLoading}
-              />
-            ))}
+            {currentPageData.content && currentPageData.content.length > 0 ? (
+              currentPageData.content.map((news, index) => (
+                <NewsItem 
+                  key={news.url || index}
+                  news={news} 
+                  index={index} 
+                  isLoading={isLoading}
+                />
+              ))
+            ) : (
+              <div className="p-4 text-center text-gray-500">
+                {isLoading ? "加载中..." : "暂无新闻数据"}
+              </div>
+            )}
           </AnimatePresence>
         </motion.div>
       );
@@ -244,7 +331,8 @@ const MultiPageNewsStreamComponent = () => {
               damping: 20 
             }
           }}
-          className="p-3 rounded-lg bg-white border flex justify-between items-center mb-3"
+          className="p-3 rounded-lg bg-white border flex justify-between items-center mb-3 cursor-pointer hover:bg-blue-50 transition-colors"
+          onClick={() => window.open(item.url, '_blank')}
         >
           <div>
             <div className="font-bold">{item.name} ({item.symbol})</div>
@@ -262,7 +350,7 @@ const MultiPageNewsStreamComponent = () => {
 
   return (
     <motion.div 
-      className="flex flex-col h-[700px] w-full max-w-xl mx-auto bg-white rounded-xl shadow-lg border"
+      className="flex flex-col h-[700px] w-full max-w-xl mx-auto bg-white rounded-xl shadow-lg border relative"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ 
         opacity: 1, 
@@ -292,7 +380,10 @@ const MultiPageNewsStreamComponent = () => {
           {React.createElement(pages[currentPage].icon, { className: "text-blue-500" })}
           <h2 className="text-xl font-bold">{pages[currentPage].title}</h2>
         </div>
-        <RefreshCw className="text-gray-500 cursor-pointer hover:text-blue-500" />
+        <RefreshCw 
+          className="text-gray-500 cursor-pointer hover:text-blue-500" 
+          onClick={handleRefresh}
+        />
       </motion.div>
 
       {/* 页面切换控制 */}
@@ -327,6 +418,8 @@ const MultiPageNewsStreamComponent = () => {
                 }
               }}
               className={`h-2 w-2 rounded-full ${currentPage === index ? 'bg-blue-500' : 'bg-gray-300'}`}
+              onClick={() => setCurrentPage(index)}
+              style={{ cursor: 'pointer' }}
             />
           ))}
         </div>
@@ -336,17 +429,74 @@ const MultiPageNewsStreamComponent = () => {
         />
       </motion.div>
 
-      {/* 内容区域 */}
+      {/* 内容区域 - 使用自定义样式的原生滚动条 */}
       <motion.div 
-        className="flex-1 overflow-y-auto relative"
+        className="flex-1 overflow-y-auto relative p-4 pr-6 custom-scrollbar"
         initial={false}
-        style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
-        }}
+        ref={contentRef}
       >
+        <style jsx global>{`
+          /* 自定义滚动条样式 */
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+          }
+          
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(229, 231, 235, 0.5);
+            border-radius: 10px;
+          }
+          
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+          }
+          
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.8);
+          }
+          
+          /* 添加Firefox的滚动条样式 */
+          .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(59, 130, 246, 0.5) rgba(229, 231, 235, 0.5);
+          }
+        `}</style>
         {renderPageContent()}
       </motion.div>
+      
+      {/* 返回顶部按钮 */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.div
+            className="absolute bottom-4 right-4 p-2 bg-blue-500 text-white rounded-full shadow-lg cursor-pointer hover:bg-blue-600 z-10"
+            initial={{ opacity: 0, scale: 0, y: 10 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1, 
+              y: 0,
+              transition: { 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 20 
+              }
+            }}
+            exit={{ 
+              opacity: 0, 
+              scale: 0, 
+              y: 10,
+              transition: { 
+                duration: 0.2 
+              }
+            }}
+            onClick={scrollToTop}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <ArrowUp size={20} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

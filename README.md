@@ -10,3 +10,19 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+## News Integrate
+CNN NYT WAPO AP美联社 NBC FOX   
+BBC The Guardian The Times
+Le Monde Der Spiegel El País
+RT（Russia Today） TASS 
+Al Jazeera Al Arabiya Arab News
+The Times of India NDTV
+新华社 人民日报 环球时报
+Chosun Ilbo Yonhap News Agency
+NHK News  The Asahi Shimbun The Japan Times 
+
+## 
+craw4ai
+redis
