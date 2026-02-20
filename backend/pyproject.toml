@@ -1,0 +1,27 @@
+[project]
+name = "edgeseeker-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiohttp>=3.13.3",
+    "alpaca-py>=0.43.2",
+    "deep-translator>=1.11.4",
+    "fastapi>=0.129.0",
+    "feedparser>=6.0.12",
+    "httpx>=0.28.1",
+    "openai>=1.0.0",
+    "numpy>=1.26.0",
+    "pytrends>=4.9.0",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.13.1",
+    "python-dateutil>=2.9.0.post0",
+    "python-dotenv>=1.2.1",
+    "pytz>=2025.2",
+    "redis>=7.2.0",
+    "ruff>=0.15.2",
+    "twikit>=2.3.3",
+    "ty>=0.0.17",
+    "uvicorn[standard]>=0.41.0",
+]

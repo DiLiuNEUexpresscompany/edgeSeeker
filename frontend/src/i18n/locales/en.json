@@ -1,0 +1,148 @@
+{
+  "brand": "EdgeSeeker",
+  
+  "header": {
+    "tracking": "Tracking",
+    "score": "Score",
+    "alert": "Alert",
+    "updated": "Updated",
+    "refresh": "Refresh",
+    "syncing": "Sync",
+    "utc": "UTC",
+    "now": "Now"
+  },
+
+  "ticker": {
+    "live": "LIVE",
+    "breaking": "BREAKING",
+    "loading": "Loading breaking news..."
+  },
+
+  "sidebar": {
+    "collection": "Collection",
+    "intelStream": "Intelligence Stream",
+    "socialIntel": "Social Intel",
+    "predictionMarkets": "Prediction Markets",
+    "markets": "Markets",
+    "defenseStocks": "Defense Stocks",
+    "crypto": "Crypto",
+    "commodities": "Commodities",
+    "livePrices": "Live Prices",
+    "criticalAlerts": "⚠ Critical Alerts"
+  },
+
+  "feed": {
+    "intelStream": "Intel Stream",
+    "socialIntelligence": "Social Intelligence",
+    "predictionMarkets": "Prediction Markets",
+    "defenseStocks": "Defense Stocks",
+    "cryptocurrency": "Cryptocurrency",
+    "commodities": "Commodities",
+    "items": "items",
+    "noItems": "No items found",
+    "all": "All",
+    "bluesky": "Bluesky",
+    "truthSocial": "Truth Social",
+    "osint": "OSINT",
+    "wire": "WIRE",
+    "milint": "MILINT",
+    "iran": "Iran",
+    "russia": "Russia",
+    "taiwan": "Taiwan",
+    "highRel": "HIGH REL",
+    "medRel": "MED REL",
+    "lowRel": "LOW REL",
+    "region": "Region",
+    "volume": "Volume",
+    "change": "Change"
+  },
+
+  "workspace": {
+    "selectItem": "Select an item to view details",
+    "socialIntel": "SOCIAL INTEL",
+    "predictionMarket": "PREDICTION MARKET",
+    "defenseStock": "DEFENSE STOCK",
+    "cryptocurrency": "CRYPTOCURRENCY",
+    "commodity": "COMMODITY",
+    "osint": "OSINT",
+    "global": "GLOBAL",
+    
+    "author": "Author",
+    "platform": "Platform",
+    "region": "Region",
+    "volume": "Volume",
+    "endDate": "End Date",
+    "symbol": "Symbol",
+    "price": "Price",
+    "change24h": "24h Change",
+    "source": "Source",
+    "date": "Date",
+    
+    "postContent": "Post Content",
+    "viewOn": "View on {{platform}}",
+    "engagement": "Engagement",
+    "realTime": "REAL-TIME",
+    "likes": "Likes",
+    "reposts": "Reposts",
+    "retruths": "ReTruths",
+    "replies": "Replies",
+    
+    "priceChart": "Price Chart",
+    "marketData": "Market Data",
+    "currentPrice": "Current Price",
+    "changeDollar": "Change ($)",
+    "relatedStocks": "Related Stocks",
+    "relatedCrypto": "Related Crypto",
+    "relatedCommodities": "Related Commodities",
+    
+    "oddsChart": "Odds Chart",
+    "yesProbability": "YES PROBABILITY (30D)",
+    "yes": "YES",
+    "no": "NO",
+    "totalVol": "Total Vol",
+    "vol24h": "24h Vol",
+    "relatedPredictions": "Related Predictions",
+    "loadingHistory": "Loading price history...",
+    "noHistoryData": "No historical data available",
+    
+    "intelSummary": "Intelligence Summary",
+    "threatAssessment": "Threat Assessment",
+    "threatScore": "Threat Score",
+    "alertLevel": "Alert Level",
+    "googleTrends": "Google Trends",
+    "newsVelocity": "News Velocity",
+    "socialIntelligence": "Social Intelligence",
+    "related": "RELATED",
+    "live": "LIVE",
+    
+    "archive": "Archive",
+    "sourceLink": "Source",
+    "translated": "Translated",
+    "predictionMarkets": "Prediction Markets",
+    "noPredictionData": "No prediction data",
+    "factorAnalysis": "Factor Analysis",
+    
+    "factorNewsVel": "NEWS",
+    "factorSocialVol": "SOC",
+    "factorTrends": "TREND",
+    "factorSentiment": "SENT",
+    "factorPrediction": "PRED",
+    "factorMarket": "MKT",
+    "factorEvent": "EVT"
+  },
+
+  "social": {
+    "noRelatedPosts": "No related social media posts found",
+    "showingRegional": "Showing regional posts • No direct matches"
+  },
+
+  "time": {
+    "mAgo": "{{count}}m ago",
+    "hAgo": "{{count}}h ago"
+  },
+
+  "language": {
+    "en": "English",
+    "zh": "中文"
+  }
+}

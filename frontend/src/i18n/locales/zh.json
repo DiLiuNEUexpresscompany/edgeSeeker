@@ -1,0 +1,148 @@
+{
+  "brand": "EdgeSeeker",
+  
+  "header": {
+    "tracking": "追踪",
+    "score": "评分",
+    "alert": "警报",
+    "updated": "更新于",
+    "refresh": "刷新",
+    "syncing": "同步中",
+    "utc": "UTC",
+    "now": "刚刚"
+  },
+
+  "ticker": {
+    "live": "实时",
+    "breaking": "突发",
+    "loading": "正在加载突发新闻..."
+  },
+
+  "sidebar": {
+    "collection": "情报收集",
+    "intelStream": "情报流",
+    "socialIntel": "社媒情报",
+    "predictionMarkets": "预测市场",
+    "markets": "金融市场",
+    "defenseStocks": "军工股",
+    "crypto": "加密货币",
+    "commodities": "大宗商品",
+    "livePrices": "实时行情",
+    "criticalAlerts": "⚠ 紧急警报"
+  },
+
+  "feed": {
+    "intelStream": "情报流",
+    "socialIntelligence": "社媒情报",
+    "predictionMarkets": "预测市场",
+    "defenseStocks": "军工股",
+    "cryptocurrency": "加密货币",
+    "commodities": "大宗商品",
+    "items": "条目",
+    "noItems": "暂无数据",
+    "all": "全部",
+    "bluesky": "Bluesky",
+    "truthSocial": "Truth Social",
+    "osint": "开源情报",
+    "wire": "通讯社",
+    "milint": "军事情报",
+    "iran": "伊朗",
+    "russia": "俄罗斯",
+    "taiwan": "台湾",
+    "highRel": "高相关",
+    "medRel": "中相关",
+    "lowRel": "低相关",
+    "region": "地区",
+    "volume": "成交量",
+    "change": "变化"
+  },
+
+  "workspace": {
+    "selectItem": "选择一个条目查看详情",
+    "socialIntel": "社媒情报",
+    "predictionMarket": "预测市场",
+    "defenseStock": "军工股",
+    "cryptocurrency": "加密货币",
+    "commodity": "大宗商品",
+    "osint": "开源情报",
+    "global": "全球",
+    
+    "author": "作者",
+    "platform": "平台",
+    "region": "地区",
+    "volume": "成交量",
+    "endDate": "截止日期",
+    "symbol": "代码",
+    "price": "价格",
+    "change24h": "24小时涨跌",
+    "source": "来源",
+    "date": "日期",
+    
+    "postContent": "帖子内容",
+    "viewOn": "在 {{platform}} 查看",
+    "engagement": "互动数据",
+    "realTime": "实时",
+    "likes": "点赞",
+    "reposts": "转发",
+    "retruths": "转推",
+    "replies": "回复",
+    
+    "priceChart": "价格走势",
+    "marketData": "市场数据",
+    "currentPrice": "当前价格",
+    "changeDollar": "涨跌额",
+    "relatedStocks": "相关股票",
+    "relatedCrypto": "相关加密货币",
+    "relatedCommodities": "相关商品",
+    
+    "oddsChart": "概率走势",
+    "yesProbability": "YES 概率 (30天)",
+    "yes": "是",
+    "no": "否",
+    "totalVol": "总成交量",
+    "vol24h": "24h成交量",
+    "relatedPredictions": "相关预测",
+    "loadingHistory": "正在加载历史数据...",
+    "noHistoryData": "暂无历史数据",
+    
+    "intelSummary": "情报摘要",
+    "threatAssessment": "威胁评估",
+    "threatScore": "威胁评分",
+    "alertLevel": "警报级别",
+    "googleTrends": "谷歌趋势",
+    "newsVelocity": "新闻热度",
+    "socialIntelligence": "社媒情报",
+    "related": "相关",
+    "live": "实时",
+    
+    "archive": "归档",
+    "sourceLink": "来源",
+    "translated": "已翻译",
+    "predictionMarkets": "预测市场",
+    "noPredictionData": "暂无预测数据",
+    "factorAnalysis": "因子分析",
+    
+    "factorNewsVel": "新闻",
+    "factorSocialVol": "社媒",
+    "factorTrends": "趋势",
+    "factorSentiment": "情绪",
+    "factorPrediction": "预测",
+    "factorMarket": "市场",
+    "factorEvent": "事件"
+  },
+
+  "social": {
+    "noRelatedPosts": "未找到相关社媒帖子",
+    "showingRegional": "显示区域帖子 • 无直接匹配"
+  },
+
+  "time": {
+    "mAgo": "{{count}}分钟前",
+    "hAgo": "{{count}}小时前"
+  },
+
+  "language": {
+    "en": "English",
+    "zh": "中文"
+  }
+}
