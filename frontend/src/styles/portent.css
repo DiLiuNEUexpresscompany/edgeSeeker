@@ -667,6 +667,7 @@ body {
 }
 
 .stat-val {
+  font-family: var(--font-serif);
   font-size: 24px;
   font-weight: 500;
   margin-bottom: 4px;
@@ -682,9 +683,11 @@ body {
 }
 
 .stat-label {
+  font-family: var(--font-mono);
   font-size: 10px;
   color: var(--ink-secondary);
   text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 /* ========== Entity List ========== */
@@ -2000,6 +2003,8 @@ a.timeline-item.social-link:hover .timeline-arrow {
   cursor: pointer;
   width: 100%;
   text-align: left;
+  position: relative;
+  z-index: 10;
 }
 
 .mobile-back-btn:hover {
@@ -2136,8 +2141,9 @@ a.timeline-item.social-link:hover .timeline-arrow {
   }
   
   .app-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 36px 56px 1fr;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     padding-bottom: 72px;
   }
   
@@ -2145,9 +2151,23 @@ a.timeline-item.social-link:hover .timeline-arrow {
     display: none;
   }
   
+  .header {
+    flex-shrink: 0;
+    height: 56px;
+  }
+  
   .feed-panel {
-    height: auto;
-    max-height: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+  }
+  
+  .feed-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
   }
   
   .workspace {
