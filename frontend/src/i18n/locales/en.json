@@ -128,7 +128,9 @@
     "factorSentiment": "SENT",
     "factorPrediction": "PRED",
     "factorMarket": "MKT",
-    "factorEvent": "EVT"
+    "factorEvent": "EVT",
+    "back": "Back",
+    "matchingPosts": "Finding related posts..."
   },
 
   "social": {

@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import i18n from '../i18n';
 import '../styles/portent.css';
+import { API_BASE_URL } from '../config';
 
-const API_BASE = 'http://localhost:8001/api/v1';
+const API_BASE = API_BASE_URL;
 
 // ========== Main Component ==========
 export default function IntelligencePage({ lang = 'en' }) {
@@ -26,6 +27,10 @@ export default function IntelligencePage({ lang = 'en' }) {
   const [lastRefresh, setLastRefresh] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  
+  // Mobile state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileView, setMobileView] = useState('feed'); // 'feed' | 'detail'
 
   // Fetch all data
   const fetchAllData = async (isInitial = false, forceRefresh = false) => {
@@ -197,8 +202,14 @@ export default function IntelligencePage({ lang = 'en' }) {
     return newsItems.filter(n => n.source_id?.includes(activeTab.toUpperCase()));
   };
 
+  // Handle mobile item selection
+  const handleMobileSelect = (item) => {
+    setSelectedItem(item);
+    setMobileView('detail');
+  };
+
   return (
-    <div className="app-container">
+    <div className={`app-container ${mobileView === 'detail' ? 'mobile-detail-view' : ''}`}>
       {/* Breaking News Ticker */}
       <BreakingTicker items={newsItems} />
       
@@ -211,16 +222,26 @@ export default function IntelligencePage({ lang = 'en' }) {
         onRefresh={handleRefresh}
         onLanguageChange={handleLanguageChange}
         lang={lang}
+        onMenuClick={() => setSidebarOpen(true)}
       />
+
+      {/* Sidebar Overlay for mobile */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
 
       <Sidebar 
         activeNav={activeNav} 
-        setActiveNav={setActiveNav}
+        setActiveNav={(nav) => {
+          setActiveNav(nav);
+          setSidebarOpen(false);
+        }}
         alertCount={alertCount}
-
         markets={markets}
         socialCount={socialPosts.length}
         predictionCount={predictions.length}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       <FeedPanel 
@@ -229,8 +250,11 @@ export default function IntelligencePage({ lang = 'en' }) {
         setActiveTab={setActiveTab}
         items={getCurrentItems()}
         selectedItem={selectedItem}
-        setSelectedItem={setSelectedItem}
-        selectPrediction={selectPrediction}
+        setSelectedItem={handleMobileSelect}
+        selectPrediction={(item) => {
+          selectPrediction(item);
+          setMobileView('detail');
+        }}
         loading={loading}
       />
 
@@ -243,6 +267,17 @@ export default function IntelligencePage({ lang = 'en' }) {
         markets={markets}
         loadingDetail={loadingDetail}
         selectPrediction={selectPrediction}
+        onBack={() => setMobileView('feed')}
+        mobileView={mobileView}
+      />
+
+      {/* Mobile Bottom Navigation */}
+      <MobileNav 
+        activeNav={activeNav}
+        setActiveNav={setActiveNav}
+        alertCount={alertCount}
+        mobileView={mobileView}
+        setMobileView={setMobileView}
       />
     </div>
   );
@@ -298,7 +333,7 @@ function BreakingTicker({ items }) {
 }
 
 // ========== Header ==========
-function Header({ time, hotspot, loading, lastRefresh, refreshing, onRefresh, onLanguageChange, lang }) {
+function Header({ time, hotspot, loading, lastRefresh, refreshing, onRefresh, onLanguageChange, lang, onMenuClick }) {
   const { t } = useTranslation();
   const level = hotspot?.alert_level || 'normal';
   const statusColor = level === 'critical' ? 'var(--accent-alert)' : 
@@ -317,7 +352,16 @@ function Header({ time, hotspot, loading, lastRefresh, refreshing, onRefresh, on
   
   return (
     <header className="header">
-      <div className="brand">{t('brand')}</div>
+      <div className="header-left">
+        <button className="menu-btn" onClick={onMenuClick} aria-label="Open menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div className="brand">{t('brand')}</div>
+      </div>
       <div className="header-meta">
         <span>
           {t('header.tracking')}: <strong style={{ color: statusColor }}>
@@ -369,10 +413,10 @@ function Header({ time, hotspot, loading, lastRefresh, refreshing, onRefresh, on
 }
 
 // ========== Sidebar ==========
-function Sidebar({ activeNav, setActiveNav, setSelectedItem, alertCount, markets, socialCount, predictionCount }) {
+function Sidebar({ activeNav, setActiveNav, setSelectedItem, alertCount, markets, socialCount, predictionCount, isOpen, onClose }) {
   const { t } = useTranslation();
   return (
-    <nav className="sidebar">
+    <nav className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="nav-section">
         <div className="nav-title">{t('sidebar.collection')}</div>
         <NavItem 
@@ -1033,7 +1077,7 @@ function FeedPanel({ activeNav, activeTab, setActiveTab, items, selectedItem, se
 }
 
 // ========== Workspace ==========
-function Workspace({ selectedItem, hotspot, regions, socialPosts, predictions, markets, loadingDetail, selectPrediction }) {
+function Workspace({ selectedItem, hotspot, regions, socialPosts, predictions, markets, loadingDetail, selectPrediction, onBack, mobileView }) {
   const { t } = useTranslation();
   
   // Get threat data based on selected item's region
@@ -1400,7 +1444,15 @@ function Workspace({ selectedItem, hotspot, regions, socialPosts, predictions, m
   };
 
   return (
-    <main className="workspace">
+    <main className={`workspace ${mobileView === 'detail' ? 'mobile-active' : ''}`}>
+      {/* Mobile back button */}
+      <button className="mobile-back-btn" onClick={onBack}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        {t('workspace.back') || 'Back'}
+      </button>
+      
       <div className="report-header">
         <div className="report-title-block">
           {renderHeader()}
@@ -1480,5 +1532,49 @@ function Workspace({ selectedItem, hotspot, regions, socialPosts, predictions, m
         </div>
       </div>
     </main>
+  );
+}
+
+// ========== Mobile Bottom Navigation ==========
+function MobileNav({ activeNav, setActiveNav, alertCount, mobileView, setMobileView }) {
+  const { t } = useTranslation();
+  
+  const navItems = [
+    { key: 'stream', icon: '📰', label: t('sidebar.intelStream') },
+    { key: 'social', icon: '💬', label: t('sidebar.socialIntel') },
+    { key: 'predictions', icon: '📊', label: t('sidebar.predictionMarkets') },
+    { key: 'stocks', icon: '📈', label: t('sidebar.defenseStocks') },
+  ];
+
+  return (
+    <nav className="mobile-nav">
+      <div className="mobile-nav-inner">
+        {navItems.map(item => (
+          <button
+            key={item.key}
+            className={`mobile-nav-item ${activeNav === item.key ? 'active' : ''}`}
+            onClick={() => {
+              setActiveNav(item.key);
+              setMobileView('feed');
+            }}
+          >
+            <span className="mobile-nav-icon">{item.icon}</span>
+            <span className="mobile-nav-label">{item.label}</span>
+          </button>
+        ))}
+        {alertCount > 0 && (
+          <button
+            className={`mobile-nav-item alert ${activeNav === 'alerts' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveNav('alerts');
+              setMobileView('feed');
+            }}
+          >
+            <span className="mobile-nav-icon">🚨</span>
+            <span className="mobile-nav-badge">{alertCount}</span>
+          </button>
+        )}
+      </div>
+    </nav>
   );
 }

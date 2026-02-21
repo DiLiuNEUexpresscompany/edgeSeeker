@@ -2,13 +2,12 @@
  * EdgeSeeker 前端配置
  */
 
-// API 配置
-const API_HOST = typeof window !== 'undefined' 
-  ? window.location.hostname 
-  : 'localhost';
-
 // 后端 API 地址
-export const API_BASE_URL = `http://${API_HOST}:8000/api/v1`;
+// 生产环境使用 Zeabur 部署的后端
+const isDev = import.meta.env.DEV;
+export const API_BASE_URL = isDev 
+  ? 'http://localhost:8080/api/v1'  // 本地开发环境
+  : 'https://edgeseeker.zeabur.app/api/v1';  // 生产环境
 
 // 热点地区配置
 export const REGIONS = {

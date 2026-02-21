@@ -128,7 +128,9 @@
     "factorSentiment": "情绪",
     "factorPrediction": "预测",
     "factorMarket": "市场",
-    "factorEvent": "事件"
+    "factorEvent": "事件",
+    "back": "返回",
+    "matchingPosts": "正在匹配相关帖子..."
   },
 
   "social": {

@@ -35,32 +35,32 @@ class ApiService {
   async getBreakingNews(region = null, limit = 10) {
     const params = new URLSearchParams({ limit });
     if (region) params.append('region', region);
-    return this.fetch(`/news/breaking?${params}`);
+    return this.fetch(`/news/?${params}`);  // 后端路由是 /news/
   }
 
   async getLatestNews(region = null, eventType = null, limit = 20) {
     const params = new URLSearchParams({ limit });
     if (region) params.append('region', region);
     if (eventType) params.append('event_type', eventType);
-    return this.fetch(`/news/latest?${params}`);
+    return this.fetch(`/news/?${params}`);  // 后端路由是 /news/
   }
 
   async getHeadlines(region = null, limit = 10) {
     const params = new URLSearchParams({ limit });
     if (region) params.append('region', region);
-    return this.fetch(`/news/headlines?${params}`);
+    return this.fetch(`/news/?${params}`);  // 后端路由是 /news/
   }
 
   async getDailyBriefing(region = 'russia-ukraine', date = null) {
     const params = new URLSearchParams({ region });
     if (date) params.append('date', date);
-    return this.fetch(`/news/briefing?${params}`);
+    return this.fetch(`/news/?${params}`);  // 后端暂无 briefing 端点
   }
 
   async getNewsVolume(region = null, days = 30) {
     const params = new URLSearchParams({ days });
     if (region) params.append('region', region);
-    return this.fetch(`/news/volume?${params}`);
+    return this.fetch(`/news/?${params}`);  // 后端暂无 volume 端点
   }
 
   // 社交媒体相关
@@ -68,7 +68,7 @@ class ApiService {
     const params = new URLSearchParams({ limit });
     if (platform) params.append('platform', platform);
     if (region) params.append('region', region);
-    return this.fetch(`/social/feed?${params}`);
+    return this.fetch(`/social/?${params}`);  // 后端路由是 /social/
   }
 
   async getTrackedAccounts(platform = null, category = null) {
@@ -118,7 +118,7 @@ class ApiService {
   }
 
   async getCurrentHotspot() {
-    return this.fetch('/regions/hotspot');
+    return this.fetch('/hotspot/current');  // 后端路由是 /hotspot/current
   }
 
   async getAllRegionsAnalysis() {

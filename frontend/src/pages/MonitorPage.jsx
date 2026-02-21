@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
 export default function MonitorPage() {
   const [time, setTime] = useState(new Date());
@@ -13,7 +14,7 @@ export default function MonitorPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('http://localhost:8000/api/v1/hotspot/all');
+        const res = await fetch(`${API_BASE_URL}/hotspot/all`);
         const data = await res.json();
         setRegions(data.regions || {});
         setHotspot(data.current_hotspot);
